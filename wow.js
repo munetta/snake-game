@@ -167,7 +167,6 @@ function move_snake() {
 
   }
 
-  //whez jau jay at? whez jay jay at? 
   if(add_snake_after_all_has_moved === true) {
 
     let last_node = snake[snake.length - 1];
@@ -225,7 +224,7 @@ function end_game(reason) {
   }
 }
 
-function start_game() { 
+function next_level() { 
   if(in_game) { 
     return;
   }
@@ -245,6 +244,9 @@ function start_game() {
     level_difficulty_apple_amount, 
     level_difficulty_level_speed
   );
+}
+
+function start_game() {
   setup_grid(); 
   move_snake();
 }
