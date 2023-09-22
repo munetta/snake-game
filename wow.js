@@ -1,4 +1,3 @@
-not done yet
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +9,8 @@ not done yet
 <div id = 'grid'></div>
 </body>
 <script>
+
+  //alex eatman
 
 let grid = [
   [0,0,0,0,0,0,0,0,0,0], 
@@ -36,7 +37,7 @@ let snake = [{
   turns: []
 }]; 
 
-let level = 0; 
+let level = 1; 
 
 let level_difficulty_apple_amount_percentage = 10; //-= 0.1
 
@@ -58,7 +59,7 @@ function setup_grid() {
 
   grid[snake[0].x][snake[0].y] = 1;
 
-  let div_element = `<div style = "border-radius: 50%">`;
+  let div_element = `<div style = "border-radius: 50%; width: 100%; height: 100%">`;
   for(let i = 0; i < grid.length; i++) { 
     for(let j = 0; j < grid[i].length; j++) { 
       let color;
@@ -121,7 +122,7 @@ document.addEventListener('keydown', (event) => {
 
 function move_snake() { 
 
-  if(in_game === false) { 
+  if(paused === true) { 
     return setTimeout(function() { 
       return move_snake()
     }, 1000)
@@ -153,8 +154,12 @@ function move_snake() {
       snake[i].y -= 1;
     }
 
-    if(i === 0 && typeof grid[snake[i].x][snake[i].y] === 'undefined') { 
-     return end_game('new snake node off the grid');
+    try {
+     if(i === 0 && typeof grid[snake[i].x][snake[i].y] === 'undefined') {
+      return end_game('new snake node off the grid');
+     }
+    } catch(err) { 
+      return end_game('new snake node off the grid');
     }
 
     if(i === 0 && grid[snake[i].x][snake[i].y] === 2) { 
@@ -179,15 +184,19 @@ function move_snake() {
       turns: [...snake[snake.length - 1].turns] 
     })
   
-    if(typeof grid[snake[snake.length - 1].x][snake[snake.length - 1].y] === 'undefined') { 
-     return end_game('added snake node off the grid');
+    try {
+     if(typeof grid[snake[snake.length - 1].x][snake[snake.length - 1].y] === 'undefined') {
+      return end_game('added snake node off the grid');
+     }
+    } catch(err) { 
+      return end_game('added snake node off the grid');
     }
 
     if(snake.length === grid[0].length * grid[0][0].length) { 
       return end_game('won game the grid has been traversed')
     }
 
-    if(snake.length === apple_count) { 
+    if(snake.length - 1 >= apple_count) { 
       return end_game('won game found all apples');
     }
 
@@ -210,79 +219,126 @@ function move_snake() {
 
 function end_game(reason) { 
   if(reason === 'snake went into itself') { 
-    end_game();
+    alert('s')
+    end_();
   } else if(reason === 'added snake node off the grid') { 
-    end_game();
+    alert('c')
+    end_();
   } else if(reason === 'new snake node off the grid') { 
-    end_game();
-  } else if(reason === 'won game snake off grid') {
-
+    alert('r')
+    end_();
+  } else if(reason === 'won game the grid has been traversed') {
+    alert('x')
+    end_();
   } else if(reason === 'won game found all apples') { 
     //below
-  } else if(reason === 'won game the grid has been successfully') { 
-
+    alert('q')
+    next_level();
   }
 }
 
 function next_level() { 
-  if(in_game) { 
-    return;
-  }
-  in_game = true;
-  levels += 1; 
+  level += 1; 
   if(
-   levels === 100 && 
+   level === 100 && 
    level_difficulty_apple_amount_percentage === 0 && 
    level_difficulty_speed === 0
   ) { 
    return end_game();
   }
-  level_difficulty_apple_amount -= 0.1;
-  level_difficulty_level_speed -= 6; 
+  level_difficulty_apple_amount_percentage -= 0.1;
+  level_difficulty_speed -= 6; 
   display_level_data(
     level, 
-    level_difficulty_apple_amount, 
-    level_difficulty_level_speed
+    level_difficulty_apple_amount_percentage, 
+    level_difficulty_speed
   );
+  for(let i = 0; i < grid.length; i++) {
+    for(let j = 0; j < grid[i].length; j++) {
+      if(grid[i][j] === 1) { 
+        grid[i][j] = 0;
+      }
+    } 
+  }
+  snake = [{ 
+   x: 0, 
+   y: 0, 
+   direction: 's', 
+   type_: 'leading_node', 
+   turns: []
+  }];
+  apple_count = 0;
+  in_game = false; 
+  start_game();
 }
 
+document.query_selector('#start_game').click(function() { 
+  if(in_game === true) { 
+    return;
+  }
+  start_game();
+})
+
 function start_game() {
+  if(in_game === true) { 
+    return;
+  }
+  in_game = true;
   setup_grid(); 
   move_snake();
 }
 
-function pause() { 
-  in_game = false;
-  document.getElementById('pause_avitar').innerHTML = 'paused'
-} 
-
-function unpause() { 
- in_game = true;
- document.getElementById('pause_avitar') = 'playing';
+document.query_selector('pause').click = function() { 
+  if(in_game === false) { 
+    return;
+  }
+  paused = true;
+  document.getElementById('pause_avitar').innerText = 'paused'
 }
+
+document.querySelector('unpause').click = function(){ 
+  if(in_game === false) { 
+    return;
+  }
+ paused = false;
+ document.getElementById('pause_avitar').innerText = 'playing';
+};
 
 function exit_game() { 
   end_game();
 } 
 
-function display_level_data() { 
+function display_level_data(a, b, c) { 
   document.getElementById('level').innerText = a; 
   document.getElementById('parameter_a_increase').innerText = b;
   document.getElementById('parameter_b_increase').innerText = c; 
 }
 
-function end_game() { 
- document.getElementById('level').innerText = 'play now'; 
- document.getElementById('parameter_a_increase').innerText = 'play now';
- document.getElementById('parameter_b_increase').innerText = 'play now'; 
- level_difficulty_apple_amount = 10; 
- level_difficulty_level_speed = 600;
- level = 0;
+function end_() { 
+ level_difficulty_apple_amount_percentage = 10; 
+ level_difficulty_speed = 600;
+ level = 1;
+ display_level_data(
+  level, 
+  level_difficulty_apple_amount_percentage, 
+  level_difficulty_speed
+ ); 
  in_game = false;
+ snake = [{ 
+   x: 0, 
+   y: 0, 
+   direction: 's', 
+   type_: 'leading_node', 
+   turns: []
+  }];
+ apple_count = 0;
 }
 
-setup_grid();
-move_snake();
+display_level_data(
+  level, 
+  level_difficulty_apple_amount_percentage, 
+  level_difficulty_speed
+); 
 
 </script>
 </html>
