@@ -9,9 +9,7 @@
 <div id = 'grid'></div>
 </body>
 <script>
-
-  //alex eatman
-
+//snake game one version. array of nodes with turning points - other is just copying into
 let grid = [
   [0,0,0,0,0,0,0,0,0,0], 
   [0,0,0,0,0,0,0,0,0,0],
@@ -81,31 +79,31 @@ function setup_grid() {
 
 document.addEventListener('keydown', (event) => {
 
-    let direction_one_conditional_parameter_for_returning_out; 
-    let direction_two_conditional_parameter_for_returning_out; 
-    let going_in_direction_parameter_for_adding_turn;
+    let conditional_a; 
+    let conditional_b; 
+    let new_direction;
 
     if(event.key ===  'ArrowRight') { 
-     direction_one_conditional_parameter_for_returning_out = 'e';
-     direction_two_conditional_parameter_for_returning_out = 'w';
-     going_in_direction_parameter_for_adding_turn = 'e';
+     conditional_a = 'e';
+     conditional_b = 'w';
+     new_direction = 'e';
     } else if(event.key ===  'ArrowLeft') { 
-     direction_one_conditional_parameter_for_returning_out = 'e';
-     direction_two_conditional_parameter_for_returning_out = 'w';
-     going_in_direction_parameter_for_adding_turn = 'w';
+     conditional_a = 'e';
+     conditional_b = 'w';
+     new_direction = 'w';
     } else if(event.key ===  'ArrowUp') { 
-     direction_one_conditional_parameter_for_returning_out = 'n';
-     direction_two_conditional_parameter_for_returning_out = 's';
-     going_in_direction_parameter_for_adding_turn = 'n';
+     conditional_a = 'n';
+     conditional_b = 's';
+     new_direction = 'n';
     } else if(event.key === 'ArrowDown') { 
-     direction_one_conditional_parameter_for_returning_out = 'n';
-     direction_two_conditional_parameter_for_returning_out = 's';
-     going_in_direction_parameter_for_adding_turn = 's';
+     conditional_a = 'n';
+     conditional_b = 's';
+     new_direction = 's';
     }
 
     if(
-     snake[0].direction === direction_one_conditional_parameter_for_returning_out || 
-     snake[0].direction === direction_two_conditional_parameter_for_returning_out
+     snake[0].direction === conditional_a || 
+     snake[0].direction === conditional_b
     ) { 
      return;
     }
@@ -114,7 +112,7 @@ document.addEventListener('keydown', (event) => {
      snake[i].turns.push({ 
       turn_at_x_coordinate: snake[0].x, 
       turn_at_y_coordinate: snake[0].y, 
-      direction_for_node_to_turn_in: going_in_direction_parameter_for_adding_turn
+      direction_for_node_to_turn_in: new_direction
      })
     } 
   
@@ -181,7 +179,7 @@ function move_snake() {
       direction: last_node.direction,
       y: last_node.direction === 'e' ? last_node.y - 1 : last_node.direction === 'w' ? last_node.y + 1 : last_node.y, 
       type_: 'trailing_node', 
-      turns: [...snake[snake.length - 1].turns] 
+      turns: [...snake[snake.length - 1].turns]  
     })
   
     try {
@@ -192,11 +190,7 @@ function move_snake() {
       return end_game('added snake node off the grid');
     }
 
-    if(snake.length === grid[0].length * grid[0][0].length) { 
-      return end_game('won game the grid has been traversed')
-    }
-
-    if(snake.length - 1 >= apple_count) { 
+    if(snake.length - 1 >= apple_count) {
       return end_game('won game found all apples');
     }
 
@@ -240,10 +234,7 @@ function end_game(reason) {
 function next_level() { 
   level += 1; 
   if(
-   level === 100 && 
-   level_difficulty_apple_amount_percentage === 0 && 
-   level_difficulty_speed === 0
-  ) { 
+   level === 101) { 
    return end_game();
   }
   level_difficulty_apple_amount_percentage -= 0.1;
@@ -288,20 +279,20 @@ function start_game() {
   move_snake();
 }
 
-document.query_selector('pause').click = function() { 
+document.querySelector('#pause').click = function() { 
   if(in_game === false) { 
     return;
   }
   paused = true;
-  document.getElementById('pause_avitar').innerText = 'paused'
+  document.querySelector('#pause_avitar').innerText = 'paused'
 }
 
-document.querySelector('unpause').click = function(){ 
+document.querySelector('#unpause').click = function(){ 
   if(in_game === false) { 
     return;
   }
  paused = false;
- document.getElementById('pause_avitar').innerText = 'playing';
+ document.querySelector('#pause_avitar').innerText = 'playing';
 };
 
 function exit_game() { 
@@ -318,11 +309,6 @@ function end_() {
  level_difficulty_apple_amount_percentage = 10; 
  level_difficulty_speed = 600;
  level = 1;
- display_level_data(
-  level, 
-  level_difficulty_apple_amount_percentage, 
-  level_difficulty_speed
- ); 
  in_game = false;
  snake = [{ 
    x: 0, 
@@ -332,6 +318,11 @@ function end_() {
    turns: []
   }];
  apple_count = 0;
+ display_level_data(
+  level, 
+  level_difficulty_apple_amount_percentage, 
+  level_difficulty_speed
+ ); 
 }
 
 display_level_data(
