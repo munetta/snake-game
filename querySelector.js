@@ -1,8 +1,8 @@
 /*
     QUERY LISTENERS FOR
-    SETUP GRID
+    SETUP GRID / UPDATE GRID DIMENSIONS WITH SNAKE ATTACHED
     START GAME
-    S
+    EXIT GAME
     PAUSE GAME
     UNPAUSE GAME
     parameter in_game for not running functions while in game
@@ -25,7 +25,7 @@ document.querySelector('#unpause').click = function(){
 };
 
 document.querySelector('#start_game').click(function() { 
-  if(in_game === true) {  -- wrong 
+  if(in_game === true) { 
     return;
   }
   start_game();
@@ -39,4 +39,11 @@ document.querySelector('#setup_grid').click(function() {
   return;
  }
  setup_grid(dimensions);
+}); 
+
+document.querySelector('#exit_game').click(function() { 
+  if(in_game === false) { 
+    return;
+  }
+  end_();
 })
