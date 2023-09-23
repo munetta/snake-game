@@ -1,7 +1,4 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Document</title></head><body><div id = 'grid'></div></body><script>
-//snake game one version. array of nodes with turning points
-//image resize portion property over both sides of x and y
-//making three dimensional images and viewing them. then making them bigger. all you need to know.
 
 let grid = []; 
 
@@ -50,8 +47,6 @@ function setup_grid(dimensions) {
 
   grid[snake[0].x][snake[0].y] = 1;
 
-  //set dimensionality width, height of outer and width height of inner
-
   let div_element = `<div style = "width: ${dimensions * 10}px; height: ${dimensions * 10}px; margin-top: 100px">`;
   for(let i = 0; i < grid.length; i++) { 
     for(let j = 0; j < grid[i].length; j++) { 
@@ -63,7 +58,7 @@ function setup_grid(dimensions) {
       } else { 
         color = 'black';
       }                 
-      div_element += `<span id = '${i}-${j}' style = 'border-color: 1px solid ${color}; height: 10px; width: 10px; display: in-line-block; background-color: ${color}'> </span>`;
+      div_element += `<span id = '${i}-${j}' style = 'border-color: 1px solid ${color}; height: ${dimensions}px; width: ${dimensions}px; display: in-line-block; background-color: ${color}'> </span>`;
     }
     div_element += `<br>`; 
   }
@@ -118,7 +113,7 @@ function move_snake() {
   if(paused === true) { 
     return setTimeout(function() { 
       return move_snake()
-    }, 1000)
+    }, 500)
   }
 
   let add_snake_after_all_has_moved = false;
@@ -171,8 +166,8 @@ function move_snake() {
 
     snake.push({ 
       x: last_node.direction === 'n' ? last_node.x + 1 : last_node.direction === 's' ? last_node.x - 1 : last_node.x,  
-      direction: last_node.direction,
       y: last_node.direction === 'e' ? last_node.y - 1 : last_node.direction === 'w' ? last_node.y + 1 : last_node.y, 
+      direction: last_node.direction,
       type_: 'trailing_node', 
       turns: [...snake[snake.length - 1].turns]  
     })
@@ -222,7 +217,8 @@ function end_game(reason) {
 function next_level() { 
   level += 1; 
   if( level === 101) { 
-   return end_game();
+   end_();
+   return;
   }
   level_difficulty_apple_amount_percentage -= 0.1;
   level_difficulty_speed -= 6; 
@@ -259,10 +255,6 @@ function start_game() {
   move_snake();
 }
 
-function exit_game() { 
-  end_game();
-} 
-
 function display_level_data(a, b, c) { 
   document.getElementById('level').innerText = a; 
   document.getElementById('parameter_a_increase').innerText = b;
@@ -295,4 +287,4 @@ display_level_data(
   level_difficulty_speed
 ); 
 
-</script><script src = 'query_selectors.js'></script></html>
+</script><script src = 'query_selector.js'></script></html>
