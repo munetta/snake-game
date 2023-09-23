@@ -1,27 +1,9 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Document</title></head><body><div id = 'grid'></div></body><script>
+//snake game one version. array of nodes with turning points
+//image resize portion property over both sides of x and y
+//making three dimensional images and viewing them. then making them bigger. all you need to know.
 
-let grid = [
-  // [0,0,0,0,0,0,0,0,0,0], 
-  // [0,0,0,0,0,0,0,0,0,0],
-  // [0,0,0,0,0,0,0,0,0,0],
-  // [0,0,0,0,0,0,0,0,0,0],
-  // [0,0,0,0,0,0,0,0,0,0],
-  // [0,0,0,0,0,0,0,0,0,0],
-  // [0,0,0,0,0,0,0,0,0,0],
-  // [0,0,0,0,0,0,0,0,0,0],
-  // [0,0,0,0,0,0,0,0,0,0],
-  // [0,0,0,0,0,0,0,0,0,0]
-]; 
-
-function set_grid_dimensions(dimensions) {
-  if(dimensions < 10) return;
-  for(let i = 0; i < 100; i++) {
-    grid[i] = [];
-    for(let j = 0; j < 100; j++) { 
-      grid[i][j] = 0;
-    }
-  }
-}
+let grid = []; 
 
 let grid_space = [];
 
@@ -45,7 +27,16 @@ let in_game = false;
 
 let paused = false;
 
-function setup_grid() {
+function setup_grid(dimensions) {
+
+  if(dimensions < 10) return;
+
+  for(let i = 0; i < dimensions; i++) {
+    grid[i] = [];
+    for(let j = 0; j < dimensions; j++) { 
+      grid[i][j] = 0;
+    }
+  }
 
   for(let i = 0; i < grid.length; i++) { 
     for(let j = 0; j < grid[i].length; j++) { 
@@ -59,7 +50,9 @@ function setup_grid() {
 
   grid[snake[0].x][snake[0].y] = 1;
 
-  let div_element = `<div style = "width: 1000px; height: 1000px; margin-top: 100px">`;
+  //set dimensionality width, height of outer and width height of inner
+
+  let div_element = `<div style = "width: ${dimensions * 10}px; height: ${dimensions * 10}px; margin-top: 100px">`;
   for(let i = 0; i < grid.length; i++) { 
     for(let j = 0; j < grid[i].length; j++) { 
       let color;
@@ -266,9 +259,6 @@ function start_game() {
   move_snake();
 }
 
-set_grid_dimensions(10);
-start_game()
-
 function exit_game() { 
   end_game();
 } 
@@ -305,4 +295,4 @@ display_level_data(
   level_difficulty_speed
 ); 
 
-</script></html>
+</script><script src = 'query_selectors.js'></script></html>
