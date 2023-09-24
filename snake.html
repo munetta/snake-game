@@ -2,8 +2,6 @@
 
 let grid = []; 
 
-let grid_space = [];
-
 let apple_count = 0;
 
 let snake = [{ 
@@ -36,7 +34,10 @@ function setup_grid(dimensions) {
 
   for(let i = 0; i < grid.length; i++) { 
     for(let j = 0; j < grid[i].length; j++) { 
-      let r = Math.floor(Math.random() * level_difficulty_apple_amount_percentage)
+      let r = Math.floor(
+        Math.random() * 
+        level_difficulty_apple_amount_percentage
+      )
       if(r === 4) { 
         grid[i][j] = 2;
         apple_count += 1;
@@ -46,7 +47,13 @@ function setup_grid(dimensions) {
 
   grid[snake[0].x][snake[0].y] = 1;
 
-  let div_element = `<div style = "width: ${dimensions * 10}px; height: ${dimensions * 10}px; margin-top: 100px">`;
+  let div_element = `
+  <div 
+   style = "
+    width: ${dimensions**2}px; 
+    height: ${dimensions**2}px; 
+    margin-top: 100px"
+  >`;
   for(let i = 0; i < grid.length; i++) { 
     for(let j = 0; j < grid[i].length; j++) { 
       let color;
@@ -57,7 +64,15 @@ function setup_grid(dimensions) {
       } else { 
         color = 'black';
       }                 
-      div_element += `<span id = '${i}-${j}' style = 'height: ${dimensions}px; width: ${dimensions}px; display: in-line-block; background-color: ${color}'> </span>`;
+      div_element += 
+      `<span 
+        id = '${i}-${j}'            
+        style = '
+        height: ${dimensions}px; 
+        width: ${dimensions}px; 
+        display: in-line-block; 
+        background-color: ${color}'> 
+      </span>`;
     }
     div_element += `<br>`; 
   }
@@ -166,7 +181,7 @@ function move_snake() {
       y: last_node.direction === 'e' ? last_node.y - 1 : last_node.direction === 'w' ? last_node.y + 1 : last_node.y, 
       direction: last_node.direction,
       type_: 'trailing_node', 
-      turns: [...snake[snake.length - 1].turns]  
+      turns: [...snake[snake.length - 1].turns]
     })
   
     try {
@@ -287,12 +302,17 @@ function end_() {
 }
 
 function win_animation(x, y) { 
-  let current_x_y = { x : 0, y : 0 };
+  let current_x_y = { 
+    x : 0, 
+    y : 0 
+  };
+
   let quarter_line = Math.floor(grid.length / 4) - 1;
   let half_line = Math.floor(grid.length / 2) - 1;
   document.querySelector(`#${current_x_y.x}-${current_x_y.y}`).style.backgroundColor = 'green';
 
-  let double_u_x_y_derivative_lines = [
+  let x_y_derivative_lines = [
+    //down
     {
       x: +1,
       y: +1,
@@ -308,6 +328,7 @@ function win_animation(x, y) {
       y: +1, 
       amount: quarter_line
     },
+    //up
     { 
       x: -1, 
       y: +1, 
@@ -322,12 +343,52 @@ function win_animation(x, y) {
       x: -1, 
       y: +1, 
       amount: quarter_line
-    }
+    }, 
+    //down
+    {
+      x: +1,
+      y: +1,
+      amount: quarter_line
+    },
+    { 
+      x: +1, 
+      y: 0,
+      amount: half_line
+    },
+    { 
+      x: +1, 
+      y: +1, 
+      amount: quarter_line
+    },
+    //up
+    { 
+      x: -1, 
+      y: +1, 
+      amount: quarter_line
+    }, 
+    { 
+      x: -1, 
+      y: 0, 
+      amount: half_line
+    }, 
+    { 
+      x: -1, 
+      y: +1, 
+      amount: quarter_line
+    }, 
+    //space across
+    { 
+      x: 0,
+      y: + 1,
+      amount: 2, 
+    }, 
+    //i single dot
+
+    //i line down
   ];
 
-  //DRAW LINE
-  for(let i = 0; i < double_u_x_y_derivative_lines.length; i++) { 
-    let line = double_u_x_y_derivative_lines[i];
+  for(let i = 0; i < x_y_derivative_lines.length; i++) { 
+    let line = x_y_derivative_lines[i];
     for(let j = 0; j < line.amount; j++) { 
       current_x_y.x += line.x;
       current_x_y.y += line.y;
