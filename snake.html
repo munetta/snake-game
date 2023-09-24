@@ -197,11 +197,15 @@ function add_node_to_end() {
   let last_node = snake[snake.length - 1];
 
   snake.push({ 
-    x: last_node.direction === 'n' ? last_node.x + 1 : last_node.direction === 's' ? last_node.x - 1 : last_node.x,  
-    y: last_node.direction === 'e' ? last_node.y - 1 : last_node.direction === 'w' ? last_node.y + 1 : last_node.y, 
+    x: last_node.direction === 'n' ? last_node.x + 1 : 
+     last_node.direction === 's' ? last_node.x - 1 : 
+     last_node.x,  
+    y: last_node.direction === 'e' ? last_node.y - 1 : 
+     last_node.direction === 'w' ? last_node.y + 1 : 
+     last_node.y, 
     direction: last_node.direction,
     type_: 'trailing_node', 
-    turns: [...snake[snake.length - 1].turns]
+    turns: [...snake[snake.length - 1].turns] //playing a game on me bill? testing my stupidity?
   })
   
   try {
@@ -211,18 +215,20 @@ function add_node_to_end() {
     }
   } catch(err) { 
     end_game('added snake node off the grid');
-    return false;
+    return false
   }
 
   if(snake.length - 1 >= apple_count) {
     end_game('won game found all apples');
-    return false;
+    return false
   }
 
   grid[snake[snake.length - 1].x][snake[snake.length - 1].y] = 1;
-  document.getElementById(`${snake[snake.length - 1].x}-${snake[snake.length - 1].y}`).style.backgroundColor = 'red';
+  document.getElementById(`${snake[snake.length - 1].x}-${snake[snake.length - 1].y}`)
+  .style
+  .backgroundColor = 'red';
 
-  return true;
+  return true
 
 }
 
@@ -318,7 +324,7 @@ function pause() {
   if(in_game === false || in_game === true && paused === true) { 
     return;
   }
-  paused = false;
+  paused = true;
   document.querySelector('#pause_avitar').innerText = 'paused';
 }
 
