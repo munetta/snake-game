@@ -25,7 +25,6 @@ let in_game = false;
 let paused = false;
 
 function setup_grid(dimensions) {
-
   if(dimensions < 10) return;
 
   for(let i = 0; i < dimensions; i++) {
@@ -58,7 +57,7 @@ function setup_grid(dimensions) {
       } else { 
         color = 'black';
       }                 
-      div_element += `<span id = '${i}-${j}' style = 'border-color: 1px solid ${color}; height: ${dimensions}px; width: ${dimensions}px; display: in-line-block; background-color: ${color}'> </span>`;
+      div_element += `<span id = '${i}-${j}' style = 'height: ${dimensions}px; width: ${dimensions}px; display: in-line-block; background-color: ${color}'> </span>`;
     }
     div_element += `<br>`; 
   }
@@ -68,48 +67,46 @@ function setup_grid(dimensions) {
 }
 
 document.addEventListener('keydown', (event) => {
+  let conditional_a; 
+  let conditional_b; 
+  let new_direction;
 
-    let conditional_a; 
-    let conditional_b; 
-    let new_direction;
+  if(event.key ===  'ArrowRight') { 
+    conditional_a = 'e';
+    conditional_b = 'w';
+    new_direction = 'e';
+  } else if(event.key ===  'ArrowLeft') { 
+    conditional_a = 'e';
+    conditional_b = 'w';
+    new_direction = 'w';
+  } else if(event.key ===  'ArrowUp') { 
+    conditional_a = 'n';
+    conditional_b = 's';
+    new_direction = 'n';
+  } else if(event.key === 'ArrowDown') { 
+    conditional_a = 'n';
+    conditional_b = 's';
+    new_direction = 's';
+  }
 
-    if(event.key ===  'ArrowRight') { 
-     conditional_a = 'e';
-     conditional_b = 'w';
-     new_direction = 'e';
-    } else if(event.key ===  'ArrowLeft') { 
-     conditional_a = 'e';
-     conditional_b = 'w';
-     new_direction = 'w';
-    } else if(event.key ===  'ArrowUp') { 
-     conditional_a = 'n';
-     conditional_b = 's';
-     new_direction = 'n';
-    } else if(event.key === 'ArrowDown') { 
-     conditional_a = 'n';
-     conditional_b = 's';
-     new_direction = 's';
-    }
+  if(
+    snake[0].direction === conditional_a || 
+    snake[0].direction === conditional_b
+  ) { 
+    return;
+  }
 
-    if(
-     snake[0].direction === conditional_a || 
-     snake[0].direction === conditional_b
-    ) { 
-     return;
-    }
+  for(let i = 0; i < snake.length; i++) { 
+    snake[i].turns.push({ 
+     turn_at_x_coordinate: snake[0].x, 
+     turn_at_y_coordinate: snake[0].y, 
+     direction_for_node_to_turn_in: new_direction
+    })
+  } 
 
-    for(let i = 0; i < snake.length; i++) { 
-     snake[i].turns.push({ 
-      turn_at_x_coordinate: snake[0].x, 
-      turn_at_y_coordinate: snake[0].y, 
-      direction_for_node_to_turn_in: new_direction
-     })
-    } 
-  
 });
 
 function move_snake() { 
-
   if(paused === true) { 
     return setTimeout(function() { 
       return move_snake()
@@ -203,30 +200,40 @@ function move_snake() {
 
 function end_game(reason) { 
   if(reason === 'snake went into itself') { 
+    document.querySelector('#win').innerText = 'You Lose';
     end_();
     //SHOULD NOT EXECUTE
-  } else if(reason === 'added snake node off the grid') { 
+  } else if(reason === 'added snake node off the grid') {
+    document.querySelector('#win').innerText = 'You Lose'; 
     end_();
   } else if(reason === 'front snake node off the grid') {
+    document.querySelector('#win').innerText = 'You Lose';
     end_();
   } else if(reason === 'won game found all apples') { 
+    document.querySelector('#win').innerText = 'You Win Level ${level}';
     next_level();
   }
 }
 
-function next_level() { 
+function next_level() {
   level += 1; 
-  if( level === 101) { 
+
+  if(level === 100) { 
+   document.querySelector('#win').innerText = 'You Win Game';
+   win_animation();
    end_();
    return;
   }
+
   level_difficulty_apple_amount_percentage -= 0.1;
   level_difficulty_speed -= 6; 
+
   display_level_data(
     level, 
     level_difficulty_apple_amount_percentage, 
     level_difficulty_speed
   );
+
   for(let i = 0; i < grid.length; i++) {
     for(let j = 0; j < grid[i].length; j++) {
       if(grid[i][j] === 1) { 
@@ -234,6 +241,7 @@ function next_level() {
       }
     } 
   }
+
   snake = [{ 
    x: 0, 
    y: 0, 
@@ -241,9 +249,12 @@ function next_level() {
    type_: 'leading_node', 
    turns: []
   }];
+
   apple_count = 0;
   in_game = false; 
+
   start_game();
+
 }
 
 function start_game() {
@@ -253,12 +264,6 @@ function start_game() {
   in_game = true;
   setup_grid(); 
   move_snake();
-}
-
-function display_level_data(a, b, c) { 
-  document.getElementById('level').innerText = a; 
-  document.getElementById('parameter_a_increase').innerText = b;
-  document.getElementById('parameter_b_increase').innerText = c; 
 }
 
 function end_() { 
@@ -281,10 +286,67 @@ function end_() {
  ); 
 }
 
+function win_animation(x, y) { 
+  let current_x_y = { x : 0, y : 0 };
+  let quarter_line = Math.floor(grid.length / 4) - 1;
+  let half_line = Math.floor(grid.length / 2) - 1;
+  document.querySelector(`#${current_x_y.x}-${current_x_y.y}`).style.backgroundColor = 'green';
+
+  let double_u_x_y_derivative_lines = [
+    {
+      x: +1,
+      y: +1,
+      amount: quarter_line
+    },
+    { 
+      x: +1, 
+      y: 0,
+      amount: half_line
+    },
+    { 
+      x: +1, 
+      y: +1, 
+      amount: quarter_line
+    },
+    { 
+      x: -1, 
+      y: +1, 
+      amount: quarter_line
+    }, 
+    { 
+      x: -1, 
+      y: 0, 
+      amount: half_line
+    }, 
+    { 
+      x: -1, 
+      y: +1, 
+      amount: quarter_line
+    }
+  ];
+
+  //DRAW LINE
+  for(let i = 0; i < double_u_x_y_derivative_lines.length; i++) { 
+    let line = double_u_x_y_derivative_lines[i];
+    for(let j = 0; j < line.amount; j++) { 
+      current_x_y.x += line.x;
+      current_x_y.y += line.y;
+      document.getElementById(`${current_x_y.x}-${current_x_y.y}`).style.backgroundColor = 'green';
+    }
+  }
+
+}
+
+function display_level_data(a, b, c) { 
+  document.getElementById('level').innerText = a; 
+  document.getElementById('parameter_a_increase').innerText = b;
+  document.getElementById('parameter_b_increase').innerText = c; 
+}
+
 display_level_data(
   level, 
   level_difficulty_apple_amount_percentage, 
   level_difficulty_speed
 ); 
 
-</script><script src = 'query_selector.js'></script></html>
+</script><script src = 'query_selectors.js'></script></html>
