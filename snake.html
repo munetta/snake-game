@@ -1,9 +1,7 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Document</title></head><body><div id = 'grid'></div></body><script>
 
 let grid = []; 
-
 let apple_count = 0;
-
 let snake = [{ 
   x: 0, 
   y: 0, 
@@ -11,18 +9,14 @@ let snake = [{
   type_: 'leading_node', 
   turns: []
 }]; 
-
 let level = 1; 
-
 let level_difficulty_apple_amount_percentage = 10; //-= 0.1
-
 let level_difficulty_speed = 600; // -= 6
-
 let in_game = false;
-
 let paused = false;
 
 function setup_grid(dimensions) {
+
   if(dimensions < 10) return;
 
   for(let i = 0; i < dimensions; i++) {
@@ -82,6 +76,7 @@ function setup_grid(dimensions) {
 }
 
 document.addEventListener('keydown', (event) => {
+
   let conditional_a; 
   let conditional_b; 
   let new_direction;
@@ -122,18 +117,21 @@ document.addEventListener('keydown', (event) => {
 });
 
 function move_snake() { 
+
   if(paused === true) { 
     return setTimeout(function() { 
       return move_snake()
     }, 500)
   }
 
-  let add_snake_after_all_has_moved = false;
+  let add_snake_node_after_all_has_moved = false;
 
   for(let i = 0; i < snake.length; i++) {
 
     grid[snake[i].x][snake[i].y] = 0;
-    document.getElementById(`${snake[i].x}-${snake[i].y}`).style.backgroundColor = 'black'; 
+    document.getElementById(`${snake[i].x}-${snake[i].y}`)
+    .style
+    .backgroundColor = 'black'; 
 
     if(
       snake[i].turns.length > 0 && 
@@ -156,54 +154,35 @@ function move_snake() {
 
     try {
      if(i === 0 && typeof grid[snake[i].x][snake[i].y] === 'undefined') {
-      return end_game('front snake node off the grid');
+      end_game('front snake node off the grid');
+      return;
      }
     } catch(err) { 
-      return end_game('front snake node off the grid');
+      end_game('front snake node off the grid');
+      return;
     }
 
     if(i === 0 && grid[snake[i].x][snake[i].y] === 2) { 
-      add_snake_after_all_has_moved = true;
+      add_snake_node_after_all_has_moved = true;
     }
 
     grid[snake[i].x][snake[i].y] = 1;
-    document.getElementById(`${snake[i].x}-${snake[i].y}`).style.backgroundColor = 'red';
-    document.getElementById(`${snake[i].x}-${snake[i].y}`).innerText = i;
+    document.getElementById(`${snake[i].x}-${snake[i].y}`)
+    .style
+    .backgroundColor = 'red';
 
   }
 
-  if(add_snake_after_all_has_moved === true) {
-
-    let last_node = snake[snake.length - 1];
-
-    snake.push({ 
-      x: last_node.direction === 'n' ? last_node.x + 1 : last_node.direction === 's' ? last_node.x - 1 : last_node.x,  
-      y: last_node.direction === 'e' ? last_node.y - 1 : last_node.direction === 'w' ? last_node.y + 1 : last_node.y, 
-      direction: last_node.direction,
-      type_: 'trailing_node', 
-      turns: [...snake[snake.length - 1].turns]
-    })
-  
-    try {
-     if(typeof grid[snake[snake.length - 1].x][snake[snake.length - 1].y] === 'undefined') {
-      return end_game('added snake node off the grid');
-     }
-    } catch(err) { 
-      return end_game('added snake node off the grid');
+  if(add_snake_node_after_all_has_moved === true) {
+    if(!add_node_to_end()) { 
+      return;
     }
-
-    if(snake.length - 1 >= apple_count) {
-      return end_game('won game found all apples');
-    }
-
-    grid[snake[snake.length - 1].x][snake[snake.length - 1].y] = 1;
-    document.getElementById(`${snake[snake.length - 1].x}-${snake[snake.length - 1].y}`).style.backgroundColor = 'red';
-
   }
 
   for(let i = snake.length - 1; i > 0; i--) { 
     if(snake[i].x === snake[0].x && snake[i].y === snake[0].y) { 
-      return end_game('snake went into itself');
+      end_game('snake went into itself');
+      return;
     }
   }
 
@@ -213,8 +192,45 @@ function move_snake() {
 
 }
 
+function add_node_to_end() { 
+
+  let last_node = snake[snake.length - 1];
+
+  snake.push({ 
+    x: last_node.direction === 'n' ? last_node.x + 1 : last_node.direction === 's' ? last_node.x - 1 : last_node.x,  
+    y: last_node.direction === 'e' ? last_node.y - 1 : last_node.direction === 'w' ? last_node.y + 1 : last_node.y, 
+    direction: last_node.direction,
+    type_: 'trailing_node', 
+    turns: [...snake[snake.length - 1].turns]
+  })
+  
+  try {
+    if(typeof grid[snake[snake.length - 1].x][snake[snake.length - 1].y] === 'undefined') {
+     end_game('added snake node off the grid');
+     return false
+    }
+  } catch(err) { 
+    end_game('added snake node off the grid');
+    return false;
+  }
+
+  if(snake.length - 1 >= apple_count) {
+    end_game('won game found all apples');
+    return false;
+  }
+
+  grid[snake[snake.length - 1].x][snake[snake.length - 1].y] = 1;
+  document.getElementById(`${snake[snake.length - 1].x}-${snake[snake.length - 1].y}`).style.backgroundColor = 'red';
+
+  return true;
+
+}
+
 function end_game(reason) { 
-  if(reason === 'snake went into itself') { 
+  if(reason === 'user decided to click end') { 
+    document.querySelector('#win').innerText = 'You have ended the game';
+    end_(); 
+  } else if(reason === 'snake went into itself') { 
     document.querySelector('#win').innerText = 'You Lose';
     end_();
     //SHOULD NOT EXECUTE
@@ -225,30 +241,25 @@ function end_game(reason) {
     document.querySelector('#win').innerText = 'You Lose';
     end_();
   } else if(reason === 'won game found all apples') { 
-    document.querySelector('#win').innerText = 'You Win Level ${level}';
+    document.querySelector('#win').innerText = `You Win Level ${level}`;
     next_level();
   }
 }
 
 function next_level() {
   level += 1; 
-
   if(level === 100) { 
-   document.querySelector('#win').innerText = 'You Win Game';
-   win_animation();
+   document.querySelector('#win').innerText = 'You Won';
    end_();
    return;
   }
-
   level_difficulty_apple_amount_percentage -= 0.1;
   level_difficulty_speed -= 6; 
-
   display_level_data(
     level, 
     level_difficulty_apple_amount_percentage, 
     level_difficulty_speed
   );
-
   for(let i = 0; i < grid.length; i++) {
     for(let j = 0; j < grid[i].length; j++) {
       if(grid[i][j] === 1) { 
@@ -256,7 +267,6 @@ function next_level() {
       }
     } 
   }
-
   snake = [{ 
    x: 0, 
    y: 0, 
@@ -264,12 +274,10 @@ function next_level() {
    type_: 'leading_node', 
    turns: []
   }];
-
   apple_count = 0;
   in_game = false; 
-
+  paused = false;
   start_game();
-
 }
 
 function start_game() {
@@ -277,11 +285,14 @@ function start_game() {
     return;
   }
   in_game = true;
-  setup_grid(); 
+  setup_grid(10); 
   move_snake();
 }
 
 function end_() { 
+ if(in_game === false) { 
+  return;
+ }
  level_difficulty_apple_amount_percentage = 10; 
  level_difficulty_speed = 600;
  level = 1;
@@ -294,108 +305,29 @@ function end_() {
    turns: []
   }];
  apple_count = 0;
+ paused = false;
  display_level_data(
   level, 
   level_difficulty_apple_amount_percentage, 
   level_difficulty_speed
  ); 
+ document.querySelector('#win').innerText = '';
 }
 
-function win_animation(x, y) { 
-  let current_x_y = { 
-    x : 0, 
-    y : 0 
-  };
-
-  let quarter_line = Math.floor(grid.length / 4) - 1;
-  let half_line = Math.floor(grid.length / 2) - 1;
-  document.querySelector(`#${current_x_y.x}-${current_x_y.y}`).style.backgroundColor = 'green';
-
-  let x_y_derivative_lines = [
-    //down
-    {
-      x: +1,
-      y: +1,
-      amount: quarter_line
-    },
-    { 
-      x: +1, 
-      y: 0,
-      amount: half_line
-    },
-    { 
-      x: +1, 
-      y: +1, 
-      amount: quarter_line
-    },
-    //up
-    { 
-      x: -1, 
-      y: +1, 
-      amount: quarter_line
-    }, 
-    { 
-      x: -1, 
-      y: 0, 
-      amount: half_line
-    }, 
-    { 
-      x: -1, 
-      y: +1, 
-      amount: quarter_line
-    }, 
-    //down
-    {
-      x: +1,
-      y: +1,
-      amount: quarter_line
-    },
-    { 
-      x: +1, 
-      y: 0,
-      amount: half_line
-    },
-    { 
-      x: +1, 
-      y: +1, 
-      amount: quarter_line
-    },
-    //up
-    { 
-      x: -1, 
-      y: +1, 
-      amount: quarter_line
-    }, 
-    { 
-      x: -1, 
-      y: 0, 
-      amount: half_line
-    }, 
-    { 
-      x: -1, 
-      y: +1, 
-      amount: quarter_line
-    }, 
-    //space across
-    { 
-      x: 0,
-      y: + 1,
-      amount: 2, 
-    }, 
-    //i single dot
-
-    //i line down
-  ];
-
-  for(let i = 0; i < x_y_derivative_lines.length; i++) { 
-    let line = x_y_derivative_lines[i];
-    for(let j = 0; j < line.amount; j++) { 
-      current_x_y.x += line.x;
-      current_x_y.y += line.y;
-      document.getElementById(`${current_x_y.x}-${current_x_y.y}`).style.backgroundColor = 'green';
-    }
+function pause() { 
+  if(in_game === false || in_game === true && paused === true) { 
+    return;
   }
+  paused = false;
+  document.querySelector('#pause_avitar').innerText = 'paused';
+}
 
+function unpause() { 
+  if(in_game === false || in_game === true && paused === false) { 
+    return;
+  }
+ paused = false;
+ document.querySelector('#pause_avitar').innerText = 'playing';
 }
 
 function display_level_data(a, b, c) { 
