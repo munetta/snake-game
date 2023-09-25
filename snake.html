@@ -13,7 +13,7 @@
   let level_difficulty_apple_amount_percentage = 10;
   let level_difficulty_speed = 100;
   let in_game = false;
-  let paused = false;
+  let paused = true;
   
   function setup_grid(dimensions, pixel_to_grid_ratio) {
   
@@ -67,7 +67,8 @@
         `<span id = '${i}-${j}' style = 'height: ${1 * pixel_to_grid_ratio}px; width: ${1 * pixel_to_grid_ratio}px; display: in-line-block; background-color: ${color}; float: left'></span>`;
       }
     }
-    div_element += '</div>';
+    div_element += '<p style = "text-align: center;";>Space Bar to Play/Stop</p></div>';
+
     document.getElementById('grid').innerHTML = div_element;
 
     display_level_data(); 
@@ -105,7 +106,9 @@
         paused = true;
         return;
       }
-    } 
+    } else { 
+      return;
+    }
   
     if(
       snake[0].direction === conditional_a || 
