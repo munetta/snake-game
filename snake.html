@@ -2,6 +2,7 @@
 
   let grid = []; 
   let apple_count = 0;
+  let found_apple_count = 0;
   let snake = [{ 
     x: 0, 
     y: 0, 
@@ -213,6 +214,7 @@
       turns: [...snake[snake.length - 1].turns]
     })
     
+    //should not hit
     try {
       if(typeof grid[snake[snake.length - 1].x][snake[snake.length - 1].y] === 'undefined') {
        end_('added snake node off the grid');
@@ -222,8 +224,10 @@
        end_('added snake node off the grid');
        return false;
     }
+
+    found_apple_count += 1;
   
-    if(snake.length - 1 >= apple_count) {
+    if(found_apple_count === apple_count) {
       next_level();
       return false;
     }
@@ -259,6 +263,7 @@
      turns: []
     }];
     apple_count = 0;
+    found_apple_count = 0;
     in_game = false; 
     paused = false;
     start_game();
@@ -291,6 +296,7 @@
      type_: 'leading_node', 
      turns: []
     }];
+   found_apple_count = 0;
    apple_count = 0;
    paused = false;
    start_game()
