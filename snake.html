@@ -243,11 +243,7 @@
     }
     level_difficulty_apple_amount_percentage -= 1;
     level_difficulty_speed -= 10; 
-    display_level_data(
-      level, 
-      level_difficulty_apple_amount_percentage, 
-      level_difficulty_speed
-    );
+    display_level_data();
     for(let i = 0; i < grid.length; i++) {
       for(let j = 0; j < grid[i].length; j++) {
         if(grid[i][j] === 1) { 
@@ -298,22 +294,6 @@
    apple_count = 0;
    paused = false;
    start_game()
-  }
-  
-  function pause() { 
-    if(in_game === false || in_game === true && paused === true) { 
-      return;
-    }
-    paused = true;
-    document.querySelector('#pause_avitar').innerText = 'paused';
-  }
-  
-  function unpause() { 
-    if(in_game === false || in_game === true && paused === false) { 
-      return;
-    }
-   paused = false;
-   document.querySelector('#pause_avitar').innerText = 'playing';
   }
   
   function display_level_data() { 
