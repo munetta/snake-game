@@ -1,7 +1,11 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Document</title></head><body><div id = 'grid'></div></body><script>
 
+//GLOBALS - USING GRID FOR ERRORS
+//UPDATING THE GRID AND DOCUMENT IN SNAKE FOR/EVENT LOOP
 let grid = []; 
+//IF SNAKE.LENGTH IS APPLE COUNT
 let apple_count = 0;
+//LEAD NODE IS snake[0]
 let snake = [{ 
   x: 0, 
   y: 0, 
@@ -9,13 +13,27 @@ let snake = [{
   type_: 'leading_node', 
   turns: []
 }]; 
+//LEVEL DATA
 let level = 1; 
 let level_difficulty_apple_amount_percentage = 10; //-= 0.1
 let level_difficulty_speed = 600; // -= 6
 let in_game = false;
 let paused = false;
 
-function setup_grid(dimensions) {
+//SETUP GRID SIZE
+//PLACE APPLES 
+//APPEND GRID TO DOCUMENT
+//DIMENSIIONS ARE THE SIZE OF THE GRID
+//PIXEL GRID RATIO IS FOR PIXEL SIZE DISPLAYS
+function setup_grid(dimensions, pixel_to_grid_ratio) {
+
+  if(dimensions === null) { 
+    dimensions = 10;
+  } 
+
+  if(pixel_to_grid_ratio === null) { 
+    pixel_to_grid_ratio = 10
+  }
 
   if(dimensions < 10) return;
 
@@ -32,7 +50,7 @@ function setup_grid(dimensions) {
         Math.random() * 
         level_difficulty_apple_amount_percentage
       )
-      if(r === 4) { 
+      if(r === 1) { 
         grid[i][j] = 2;
         apple_count += 1;
       }
@@ -44,8 +62,8 @@ function setup_grid(dimensions) {
   let div_element = `
   <div 
    style = "
-    width: ${dimensions**2}px; 
-    height: ${dimensions**2}px; 
+    width: ${dimensions * pixel_to_grid_ratio}px; 
+    height: ${dimensions * pixel_to_grid_ratio}px; 
     margin-top: 100px"
   >`;
   for(let i = 0; i < grid.length; i++) { 
@@ -62,8 +80,8 @@ function setup_grid(dimensions) {
       `<span 
         id = '${i}-${j}'            
         style = '
-        height: ${dimensions}px; 
-        width: ${dimensions}px; 
+        height: ${1 * pixel_to_grid_ratio}px; 
+        width: ${1 * pixel_to_grid_ratio}px; 
         display: in-line-block; 
         background-color: ${color}'> 
       </span>`;
@@ -75,6 +93,7 @@ function setup_grid(dimensions) {
 
 }
 
+//APPEND TURN TO TURNS IN EACH NODE
 document.addEventListener('keydown', (event) => {
 
   let conditional_a; 
@@ -116,6 +135,7 @@ document.addEventListener('keydown', (event) => {
 
 });
 
+//EVALUATE DIRECTION, MOVE, CHECK ERROR, ADD WHEN ALL SHIFTED, IF NEEDED, ADD NODE
 function move_snake() { 
 
   if(paused === true) { 
@@ -192,6 +212,7 @@ function move_snake() {
 
 }
 
+//ADD NODE TO END OF SNAKE NODE LIST
 function add_node_to_end() { 
 
   let last_node = snake[snake.length - 1];
@@ -232,6 +253,8 @@ function add_node_to_end() {
 
 }
 
+//LISTENERS/RANDOM FUNCTIONS
+  
 function end_game(reason) { 
   if(reason === 'user decided to click end') { 
     document.querySelector('#win').innerText = 'You have ended the game';
