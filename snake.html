@@ -1,11 +1,7 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Document</title></head><body><div id = 'grid'></div></body><script>
 
-//GLOBALS - USING GRID FOR ERRORS
-//UPDATING THE GRID AND DOCUMENT IN SNAKE FOR/EVENT LOOP
 let grid = []; 
-//IF SNAKE.LENGTH IS APPLE COUNT
 let apple_count = 0;
-//LEAD NODE IS snake[0]
 let snake = [{ 
   x: 0, 
   y: 0, 
@@ -13,29 +9,25 @@ let snake = [{
   type_: 'leading_node', 
   turns: []
 }]; 
-//LEVEL DATA
 let level = 1; 
-let level_difficulty_apple_amount_percentage = 10; //-= 0.1
-let level_difficulty_speed = 600; // -= 6
+let level_difficulty_apple_amount_percentage = 10;
+let level_difficulty_speed = 100;
 let in_game = false;
 let paused = false;
 
-//SETUP GRID SIZE
-//PLACE APPLES 
-//APPEND GRID TO DOCUMENT
-//DIMENSIIONS ARE THE SIZE OF THE GRID
-//PIXEL GRID RATIO IS FOR PIXEL SIZE DISPLAYS
 function setup_grid(dimensions, pixel_to_grid_ratio) {
 
   if(dimensions === null) { 
-    dimensions = 10;
+    dimensions = 20;
   } 
 
   if(pixel_to_grid_ratio === null) { 
-    pixel_to_grid_ratio = 10
+    pixel_to_grid_ratio = 20
   }
 
-  if(dimensions < 10) return;
+  if(dimensions < 10) { 
+    return;
+  }
 
   for(let i = 0; i < dimensions; i++) {
     grid[i] = [];
@@ -60,12 +52,7 @@ function setup_grid(dimensions, pixel_to_grid_ratio) {
   grid[snake[0].x][snake[0].y] = 1;
 
   let div_element = `
-  <div 
-   style = "
-    width: ${dimensions * pixel_to_grid_ratio}px; 
-    height: ${dimensions * pixel_to_grid_ratio}px; 
-    margin-top: 100px"
-  >`;
+  <div style = "width: ${dimensions * pixel_to_grid_ratio}px; height: ${dimensions * pixel_to_grid_ratio}px; margin-top: 100px; margin-left: auto; margin-right: auto"> <h1>Snake Game</h1>`;
   for(let i = 0; i < grid.length; i++) { 
     for(let j = 0; j < grid[i].length; j++) { 
       let color;
@@ -77,23 +64,14 @@ function setup_grid(dimensions, pixel_to_grid_ratio) {
         color = 'black';
       }                 
       div_element += 
-      `<span 
-        id = '${i}-${j}'            
-        style = '
-        height: ${1 * pixel_to_grid_ratio}px; 
-        width: ${1 * pixel_to_grid_ratio}px; 
-        display: in-line-block; 
-        background-color: ${color}'> 
-      </span>`;
+      `<span id = '${i}-${j}' style = 'height: ${1 * pixel_to_grid_ratio}px; width: ${1 * pixel_to_grid_ratio}px; display: in-line-block; background-color: ${color}; float: left'></span>`;
     }
-    div_element += `<br>`; 
   }
   div_element += '</div>';
   document.getElementById('grid').innerHTML = div_element;
 
 }
 
-//APPEND TURN TO TURNS IN EACH NODE
 document.addEventListener('keydown', (event) => {
 
   let conditional_a; 
@@ -135,7 +113,6 @@ document.addEventListener('keydown', (event) => {
 
 });
 
-//EVALUATE DIRECTION, MOVE, CHECK ERROR, ADD WHEN ALL SHIFTED, IF NEEDED, ADD NODE
 function move_snake() { 
 
   if(paused === true) { 
@@ -149,9 +126,7 @@ function move_snake() {
   for(let i = 0; i < snake.length; i++) {
 
     grid[snake[i].x][snake[i].y] = 0;
-    document.getElementById(`${snake[i].x}-${snake[i].y}`)
-    .style
-    .backgroundColor = 'black'; 
+    document.getElementById(`${snake[i].x}-${snake[i].y}`).style.backgroundColor = 'black'; 
 
     if(
       snake[i].turns.length > 0 && 
@@ -174,11 +149,11 @@ function move_snake() {
 
     try {
      if(i === 0 && typeof grid[snake[i].x][snake[i].y] === 'undefined') {
-      end_game('front snake node off the grid');
+      end_('front snake node off the grid');
       return;
      }
     } catch(err) { 
-      end_game('front snake node off the grid');
+      end_('front snake node off the grid');
       return;
     }
 
@@ -187,9 +162,7 @@ function move_snake() {
     }
 
     grid[snake[i].x][snake[i].y] = 1;
-    document.getElementById(`${snake[i].x}-${snake[i].y}`)
-    .style
-    .backgroundColor = 'red';
+    document.getElementById(`${snake[i].x}-${snake[i].y}`).style.backgroundColor = 'red';
 
   }
 
@@ -201,7 +174,7 @@ function move_snake() {
 
   for(let i = snake.length - 1; i > 0; i--) { 
     if(snake[i].x === snake[0].x && snake[i].y === snake[0].y) { 
-      end_game('snake went into itself');
+      end_('snake went into itself');
       return;
     }
   }
@@ -212,7 +185,6 @@ function move_snake() {
 
 }
 
-//ADD NODE TO END OF SNAKE NODE LIST
 function add_node_to_end() { 
 
   let last_node = snake[snake.length - 1];
@@ -231,59 +203,34 @@ function add_node_to_end() {
   
   try {
     if(typeof grid[snake[snake.length - 1].x][snake[snake.length - 1].y] === 'undefined') {
-     end_game('added snake node off the grid');
-     return false
+     end_('added snake node off the grid');
+     return false;
     }
   } catch(err) { 
-    end_game('added snake node off the grid');
-    return false
+     end_('added snake node off the grid');
+     return false;
   }
 
   if(snake.length - 1 >= apple_count) {
-    end_game('won game found all apples');
-    return false
+    next_level();
+    return false;
   }
 
   grid[snake[snake.length - 1].x][snake[snake.length - 1].y] = 1;
-  document.getElementById(`${snake[snake.length - 1].x}-${snake[snake.length - 1].y}`)
-  .style
-  .backgroundColor = 'red';
+  document.getElementById(`${snake[snake.length - 1].x}-${snake[snake.length - 1].y}`).style.backgroundColor = 'red';
 
-  return true
+  return true;
 
-}
-
-//LISTENERS/RANDOM FUNCTIONS
-  
-function end_game(reason) { 
-  if(reason === 'user decided to click end') { 
-    document.querySelector('#win').innerText = 'You have ended the game';
-    end_(); 
-  } else if(reason === 'snake went into itself') { 
-    document.querySelector('#win').innerText = 'You Lose';
-    end_();
-    //SHOULD NOT EXECUTE
-  } else if(reason === 'added snake node off the grid') {
-    document.querySelector('#win').innerText = 'You Lose'; 
-    end_();
-  } else if(reason === 'front snake node off the grid') {
-    document.querySelector('#win').innerText = 'You Lose';
-    end_();
-  } else if(reason === 'won game found all apples') { 
-    document.querySelector('#win').innerText = `You Win Level ${level}`;
-    next_level();
-  }
 }
 
 function next_level() {
   level += 1; 
-  if(level === 100) { 
-   document.querySelector('#win').innerText = 'You Won';
-   end_();
+  if(level === 11) {
+   end_('you won');
    return;
   }
-  level_difficulty_apple_amount_percentage -= 0.1;
-  level_difficulty_speed -= 6; 
+  level_difficulty_apple_amount_percentage -= 1;
+  level_difficulty_speed -= 10; 
   display_level_data(
     level, 
     level_difficulty_apple_amount_percentage, 
@@ -314,16 +261,19 @@ function start_game() {
     return;
   }
   in_game = true;
-  setup_grid(10); 
+  setup_grid(null, null); 
   move_snake();
 }
 
-function end_() { 
+function end_(reason) { 
  if(in_game === false) { 
   return;
  }
+ if(reason) { 
+  alert(reason);
+ }
  level_difficulty_apple_amount_percentage = 10; 
- level_difficulty_speed = 600;
+ level_difficulty_speed = 100;
  level = 1;
  in_game = false;
  snake = [{ 
@@ -340,7 +290,7 @@ function end_() {
   level_difficulty_apple_amount_percentage, 
   level_difficulty_speed
  ); 
- document.querySelector('#win').innerText = '';
+ start_game()
 }
 
 function pause() { 
@@ -360,9 +310,9 @@ function unpause() {
 }
 
 function display_level_data(a, b, c) { 
-  document.getElementById('level').innerText = a; 
-  document.getElementById('parameter_a_increase').innerText = b;
-  document.getElementById('parameter_b_increase').innerText = c; 
+  // document.getElementById('level').innerText = a; 
+  // document.getElementById('parameter_a_increase').innerText = b;
+  // document.getElementById('parameter_b_increase').innerText = c; 
 }
 
 display_level_data(
@@ -370,5 +320,7 @@ display_level_data(
   level_difficulty_apple_amount_percentage, 
   level_difficulty_speed
 ); 
+
+start_game();
 
 </script><script src = 'query_selectors.js'></script></html>
