@@ -1,7 +1,4 @@
 
-  //SNAKE GAME 
-  //ALEX EATMAN
-
   let grid = []; 
   let apple_count = 0;
   let found_apple_count = 0;
@@ -46,6 +43,10 @@
           level_difficulty_apple_amount_percentage
         )
         if(r === 1) { 
+          //ignore first
+          if(i === 0 && j === 0) { 
+            continue;
+          }
           grid[i][j] = 2;
           apple_count += 1;
         }
@@ -54,8 +55,7 @@
   
     grid[snake[0].x][snake[0].y] = 1;
   
-    let div_element = `
-    <div style = "width: ${dimensions * pixel_to_grid_ratio}px; height: ${dimensions * pixel_to_grid_ratio}px; margin-top: 100px; margin-left: auto; margin-right: auto"> <h1 id = 'append_level'>Snake Game</h1>`;
+    let div_element = `<div style = "width: ${dimensions * pixel_to_grid_ratio}px; height: ${dimensions * pixel_to_grid_ratio}px; margin-top: 100px; margin-left: auto; margin-right: auto"> <h1 id = 'append_level'>Snake Game</h1>`;
     for(let i = 0; i < grid.length; i++) { 
       for(let j = 0; j < grid[i].length; j++) { 
         let color;
@@ -66,12 +66,10 @@
         } else { 
           color = 'black';
         }                 
-        div_element += 
-        `<span id = '${i}-${j}' style = 'height: ${1 * pixel_to_grid_ratio}px; width: ${1 * pixel_to_grid_ratio}px; display: in-line-block; background-color: ${color}; float: left'></span>`;
+        div_element += `<span id = '${i}-${j}' style = 'height: ${1 * pixel_to_grid_ratio}px; width: ${1 * pixel_to_grid_ratio}px; display: in-line-block; background-color: ${color}; float: left'></span>`;
       }
     }
     div_element += '<p style = "text-align: center;";>Space Bar to Play/Stop</p></div>';
-
     document.getElementById('grid').innerHTML = div_element;
 
     display_level_data(); 
@@ -163,6 +161,7 @@
       }
   
       try {
+        //Purposeful redundancy - will change to something else 
        if(i === 0 && typeof grid[snake[i].x][snake[i].y] === 'undefined') {
         end_('front snake node off the grid');
         return;
@@ -308,3 +307,5 @@
     document.getElementById(`append_level`).innerHTML = `Snake Game <small> Level ${level} </small?`
   }
     
+  start_game();
+  
