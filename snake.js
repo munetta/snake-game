@@ -117,7 +117,8 @@
     ) { 
       return;
     }
-  
+
+    //yikes? why not copy.
     for(let i = 0; i < snake.length; i++) { 
       snake[i].turns.push({ 
        turn_at_x_coordinate: snake[0].x, 
